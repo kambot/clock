@@ -29,6 +29,8 @@ class Clock(QMainWindow):
         self.setFont(QFont('Arial', 10))
         QToolTip.setFont(QFont('Arial', 8))
 
+        self.tooltip = True
+        self.gray_circles = True
         self.tray_app = False
         self.in_tray = False
         self.was_tray = False
@@ -85,9 +87,6 @@ class Clock(QMainWindow):
         if self.in_tray:
             return
 
-        painter = QPainter(self)
-        pen = QPen()
-
         # cumulative seconds
         self.cum_seconds = 0
         percents = []
@@ -120,24 +119,32 @@ class Clock(QMainWindow):
         for p in percents:
             pformats.append(str(int(p*10000)/100))
         
-        tooltip = []
-        for i in range(self.circles):
-            tooltip.append(self.time_names[i] + ": " + str(self.times[i]) + " - " + pformats[i] + "%")
-            
-        self.widget.setToolTip("\n".join(tooltip))
+        if self.tooltip:
+            tooltip = []
+            for i in range(self.circles):
+                tooltip.append(self.time_names[i] + ": " + str(self.times[i]) + " - " + pformats[i] + "%")
+            self.widget.setToolTip("\n".join(tooltip))
+        else:
+            self.widget.setToolTip("")
 
 
+        painter = QPainter(self)
         def draw_arc(ind):
+            pen = QPen()
             pen.setWidth(self.p_ws[ind])
+
+            if self.gray_circles:
+                pen.setColor(Qt.gray)
+                painter.setPen(pen)
+                painter.drawArc(self.midx-self.r_ws[ind], self.midy-self.r_hs[ind], self.r_ws[ind]*2, self.r_hs[ind]*2, start_angle*16,-360*16)
+
+            pen.setColor(Qt.black)
             painter.setPen(pen)
             painter.drawArc(self.midx-self.r_ws[ind], self.midy-self.r_hs[ind], self.r_ws[ind]*2, self.r_hs[ind]*2, start_angle*16, percents[ind]*-360*16)
 
-        draw_arc(0)
-        draw_arc(1)
-        draw_arc(2)
-        draw_arc(3)
-        draw_arc(4)
-        draw_arc(5)
+        for i in range(self.circles):
+            draw_arc(i)
+
 
             
        
@@ -255,6 +262,17 @@ class Clock(QMainWindow):
                 self.custom_close()
             if event.key() == Qt.Key_Escape:
                 self.custom_close()
+
+        if event.type() == QEvent.ContextMenu:
+            menu = QMenu()
+            tc = menu.addAction('Toggle Circles')
+            ttp = menu.addAction('Toggle Tooltip')
+            action = menu.exec_(event.globalPos())
+            if action == tc:
+                self.gray_circles = not self.gray_circles
+            elif action == ttp:
+                self.tooltip = not self.tooltip
+
         return 0
 
     def closeEvent(self, event):
