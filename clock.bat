@@ -1,3 +1,3 @@
-python.exe clock.pyw
-pause
+@start pythonw.exe clock.pyw
+::pause
 

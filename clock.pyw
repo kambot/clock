@@ -268,6 +268,8 @@ class Clock(QMainWindow):
         # print(self.midx,self.midy)
         # print("-"*20)
 
+        self.p_x = int(self.p_x * self.w_scale)
+        self.p_y = int(self.p_y * self.h_scale)
         self.p_w = self.w / 30
         self.p_h = self.h / 30
 
