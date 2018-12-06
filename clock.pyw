@@ -75,6 +75,7 @@ class Clock(QMainWindow):
         self.p_y = self.midx + 0
         self.p_w = self.w / 30
         self.p_h = self.h / 30
+        self.p_speed = 2
         self.p_draw = False
 
         self.update_times()
@@ -182,6 +183,7 @@ class Clock(QMainWindow):
             pen.setWidth(1)
             pen.setColor(Qt.black)
             painter.setPen(pen)
+            painter.setBrush(Qt.black)
             painter.drawEllipse(self.p_x - self.p_w/2,self.p_y - self.p_h/2,self.p_w, self.p_h)
 
 
@@ -268,8 +270,8 @@ class Clock(QMainWindow):
         # print(self.midx,self.midy)
         # print("-"*20)
 
-        self.p_x = int(self.p_x * self.w_scale)
-        self.p_y = int(self.p_y * self.h_scale)
+        self.p_x = self.midx
+        self.p_y = self.midy
         self.p_w = self.w / 30
         self.p_h = self.h / 30
 
@@ -340,13 +342,15 @@ class Clock(QMainWindow):
                 self.setPalette(p)
 
             if event.key() == Qt.Key_A:
-                self.p_x += -1
+                self.p_x += -1 * self.p_speed * self.w_scale
             if event.key() == Qt.Key_D:
-                self.p_x += 1
+                self.p_x += 1 * self.p_speed * self.w_scale
             if event.key() == Qt.Key_S:
-                self.p_y += 1
+                self.p_y += 1 * self.p_speed * self.h_scale
             if event.key() == Qt.Key_W:
-                self.p_y += -1
+                self.p_y += -1 * self.p_speed * self.h_scale
+            if event.key() == Qt.Key_Space:
+                self.p_speed += 1
             
             if self.p_x != self.midx or self.p_y != self.midy:
                 self.p_draw = True
