@@ -59,6 +59,7 @@ class Clock(QMainWindow):
         self.h_def = self.h * 1
         self.pad = 10
 
+        self.reduce_ws = [.98,.94,.96,.97,.99,.99]
         self.p_ws_def = [3,5,7,9,11,13]
         self.p_ws = [x for x in self.p_ws_def]
 
@@ -142,20 +143,24 @@ class Clock(QMainWindow):
 
 
         painter = QPainter(self)
+        painter.eraseRect(0,0,self.w,self.h)
+        # input()
+        painter.setRenderHint(QPainter.Antialiasing,True)
+
         def draw_arc(ind):
             pen = QPen()
             pen.setWidth(self.p_ws[ind])
 
             if self.gray_circles:
                 # pen.setColor(Qt.gray)
-                pen.setWidth(self.p_ws[ind]*.94)
+                pw = self.p_ws[ind] * self.reduce_ws[ind]
+                pen.setWidth(pw)
                 pen.setColor(self.colors[self.color1_ind])
                 painter.setPen(pen)
-                painter.drawArc(self.midx-self.r_ws[ind], self.midy-self.r_hs[ind], self.r_ws[ind]*2, self.r_hs[ind]*2, start_angle*16,-360*16)
+                # painter.drawArc(self.midx-self.r_ws[ind], self.midy-self.r_hs[ind], self.r_ws[ind]*2, self.r_hs[ind]*2, start_angle*16,-360*16)
+                # painter.drawArc(self.midx-self.r_ws[ind], self.midy-self.r_hs[ind], self.r_ws[ind]*2, self.r_hs[ind]*2, start_angle*16 + percents[ind]*-360*16 - pw/self.r_ws[ind]*.5*3.14/180*16, (1-percents[ind])*-360*16 +  pw/self.r_ws[ind]*.5*3.14/180*16)
+                painter.drawArc(self.midx-self.r_ws[ind], self.midy-self.r_hs[ind], self.r_ws[ind]*2, self.r_hs[ind]*2, start_angle*16 + percents[ind]*-360*16, (1-percents[ind])*-360*16)
 
-            # pen.setColor(Qt.black)
-            # rgb = self.colors[self.color0_ind]
-            # pen.setColor(QColor(rgb[0], rgb[1], rgb[2]))
             pen.setWidth(self.p_ws[ind])
             pen.setColor(self.colors[self.color0_ind])
             painter.setPen(pen)
@@ -165,7 +170,7 @@ class Clock(QMainWindow):
             draw_arc(i)
 
 
-            
+
        
 
     def update_times(self):
