@@ -41,6 +41,7 @@ class Clock(QMainWindow):
         self.diy = 0
         self.Y_prior = "0"
 
+
         # self.colors = []
         # for i in range(256):
         #     for ii in range(256):
@@ -69,6 +70,12 @@ class Clock(QMainWindow):
         self.r_hs = [self.r_h_def * x for x in range(1,self.circles+1)]
         self.midx = self.r_w_def * self.circles + max(self.p_ws)/2 + self.pad/2
         self.midy = self.r_h_def * self.circles + max(self.p_ws)/2 + self.pad/2
+
+        self.p_x = self.midy + 0
+        self.p_y = self.midx + 0
+        self.p_w = self.w / 30
+        self.p_h = self.h / 30
+        self.p_draw = False
 
         self.update_times()
         
@@ -147,12 +154,13 @@ class Clock(QMainWindow):
         # input()
         painter.setRenderHint(QPainter.Antialiasing,True)
 
+        painter.drawPicture
+
         def draw_arc(ind):
             pen = QPen()
             pen.setWidth(self.p_ws[ind])
 
             if self.gray_circles:
-                # pen.setColor(Qt.gray)
                 pw = self.p_ws[ind] * self.reduce_ws[ind]
                 pen.setWidth(pw)
                 pen.setColor(self.colors[self.color1_ind])
@@ -168,10 +176,14 @@ class Clock(QMainWindow):
 
         for i in range(self.circles):
             draw_arc(i)
+        
+        if self.p_draw:
+            pen = QPen()
+            pen.setWidth(1)
+            pen.setColor(Qt.black)
+            painter.setPen(pen)
+            painter.drawEllipse(self.p_x - self.p_w/2,self.p_y - self.p_h/2,self.p_w, self.p_h)
 
-
-
-       
 
     def update_times(self):
         self.ts = str(time())
@@ -256,6 +268,9 @@ class Clock(QMainWindow):
         # print(self.midx,self.midy)
         # print("-"*20)
 
+        self.p_w = self.w / 30
+        self.p_h = self.h / 30
+
 
     def center(self):
         qr = self.frameGeometry()
@@ -321,6 +336,21 @@ class Clock(QMainWindow):
                 p = self.palette()
                 p.setColor(self.backgroundRole(), self.colors[self.color2_ind])
                 self.setPalette(p)
+
+            if event.key() == Qt.Key_A:
+                self.p_x += -1
+            if event.key() == Qt.Key_D:
+                self.p_x += 1
+            if event.key() == Qt.Key_S:
+                self.p_y += 1
+            if event.key() == Qt.Key_W:
+                self.p_y += -1
+            
+            if self.p_x != self.midx or self.p_y != self.midy:
+                self.p_draw = True
+
+
+
 
 
         if event.type() == QEvent.ContextMenu:
