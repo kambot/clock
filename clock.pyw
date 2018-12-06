@@ -34,10 +34,19 @@ class Clock(QMainWindow):
         self.tray_app = False
         self.in_tray = False
         self.was_tray = False
+        self.color0_ind = 1
+        self.color1_ind = 2
         self.dim = 0
         self.m_prior = "0"
         self.diy = 0
         self.Y_prior = "0"
+
+        # self.colors = []
+        # for i in range(256):
+        #     for ii in range(256):
+        #         for iii in range(256):
+        #             self.colors.append((i,ii,iii))
+        self.colors = [Qt.white, Qt.black, Qt.gray, Qt.darkGray, Qt.lightGray, Qt.red, Qt.darkRed, Qt.green, Qt.darkGreen, Qt.blue, Qt.darkBlue, Qt.cyan, Qt.darkCyan, Qt.magenta, Qt.darkMagenta, Qt.yellow, Qt.darkYellow]
 
         self.sih = 60*60
         self.sid = self.sih*24
@@ -134,11 +143,17 @@ class Clock(QMainWindow):
             pen.setWidth(self.p_ws[ind])
 
             if self.gray_circles:
-                pen.setColor(Qt.gray)
+                # pen.setColor(Qt.gray)
+                pen.setWidth(self.p_ws[ind]*.99)
+                pen.setColor(self.colors[self.color1_ind])
                 painter.setPen(pen)
                 painter.drawArc(self.midx-self.r_ws[ind], self.midy-self.r_hs[ind], self.r_ws[ind]*2, self.r_hs[ind]*2, start_angle*16,-360*16)
 
-            pen.setColor(Qt.black)
+            # pen.setColor(Qt.black)
+            # rgb = self.colors[self.color0_ind]
+            # pen.setColor(QColor(rgb[0], rgb[1], rgb[2]))
+            pen.setWidth(self.p_ws[ind])
+            pen.setColor(self.colors[self.color0_ind])
             painter.setPen(pen)
             painter.drawArc(self.midx-self.r_ws[ind], self.midy-self.r_hs[ind], self.r_ws[ind]*2, self.r_hs[ind]*2, start_angle*16, percents[ind]*-360*16)
 
@@ -262,16 +277,53 @@ class Clock(QMainWindow):
                 self.custom_close()
             if event.key() == Qt.Key_Escape:
                 self.custom_close()
+            
+            if event.key() == Qt.Key_Right:
+                self.color0_ind += 1
+                if self.color0_ind >= len(self.colors):
+                    self.color0_ind = 0
+            if event.key() == Qt.Key_Left:
+                self.color0_ind += -1
+                if self.color0_ind < 0:
+                    self.color0_ind = len(self.colors)-1
+
+            if event.key() == Qt.Key_Up:
+                if self.gray_circles:
+                    self.color1_ind += 1
+                    if self.color1_ind >= len(self.colors):
+                        self.color1_ind = 0
+            if event.key() == Qt.Key_Down:
+                if self.gray_circles:
+                    self.color1_ind += -1
+                    if self.color1_ind < 0:
+                        self.color1_ind = len(self.colors)-1
+
 
         if event.type() == QEvent.ContextMenu:
             menu = QMenu()
-            tc = menu.addAction('Toggle Circles')
+            ex = menu.addAction('Exit')
+            sq = menu.addAction('Square Window')
+            tc = menu.addAction('Inner Circles')
             ttp = menu.addAction('Toggle Tooltip')
+            co = menu.addAction('Default Colors')
             action = menu.exec_(event.globalPos())
+
             if action == tc:
                 self.gray_circles = not self.gray_circles
+
             elif action == ttp:
                 self.tooltip = not self.tooltip
+
+            elif action == sq:
+                m = min(self.w,self.h)
+                self.resize(m,m)
+            
+            elif action == co:
+                self.color0_ind = 1
+                self.color1_ind = 2
+
+            elif action == ex:
+                self.custom_close()
 
         return 0
 
