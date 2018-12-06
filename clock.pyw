@@ -1,11 +1,10 @@
-
 from time import strftime, sleep, time, mktime
 from datetime import datetime
 from calendar import monthrange
 
 import sys, os
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QKeyEvent, QPainter,QImage, QPen, QIcon, QPixmap, QColor, QBrush, QCursor, QFont
+from PyQt5.QtGui import QKeyEvent, QPainter,QImage, QPen, QIcon, QPixmap, QColor, QBrush, QCursor, QFont, QPalette
 from PyQt5.QtCore import Qt, QPoint, QPointF, QSize, QEvent, QTimer, QCoreApplication
 
 
@@ -34,8 +33,9 @@ class Clock(QMainWindow):
         self.tray_app = False
         self.in_tray = False
         self.was_tray = False
-        self.color0_ind = 1
-        self.color1_ind = 2
+        self.colors = [Qt.white, Qt.black, Qt.gray, Qt.darkGray, Qt.lightGray, Qt.red, Qt.darkRed, Qt.green, Qt.darkGreen, Qt.blue, Qt.darkBlue, Qt.cyan, Qt.darkCyan, Qt.magenta, Qt.darkMagenta, Qt.yellow, Qt.darkYellow]
+        self.color0_ind = self.colors.index(Qt.black)
+        self.color1_ind = self.colors.index(Qt.gray)
         self.dim = 0
         self.m_prior = "0"
         self.diy = 0
@@ -46,8 +46,7 @@ class Clock(QMainWindow):
         #     for ii in range(256):
         #         for iii in range(256):
         #             self.colors.append((i,ii,iii))
-        self.colors = [Qt.white, Qt.black, Qt.gray, Qt.darkGray, Qt.lightGray, Qt.red, Qt.darkRed, Qt.green, Qt.darkGreen, Qt.blue, Qt.darkBlue, Qt.cyan, Qt.darkCyan, Qt.magenta, Qt.darkMagenta, Qt.yellow, Qt.darkYellow]
-
+        
         self.sih = 60*60
         self.sid = self.sih*24
 
@@ -90,7 +89,12 @@ class Clock(QMainWindow):
         self.timer.start(50)
 
         self.installEventFilter(self)
-        
+
+        self.def_bg_color = self.widget.palette().color(QPalette.Background)
+        self.colors.append(self.def_bg_color)
+        self.color2_ind = self.colors.index(self.def_bg_color)
+
+
 
     def paintEvent(self, event):
         if self.in_tray:
@@ -144,7 +148,7 @@ class Clock(QMainWindow):
 
             if self.gray_circles:
                 # pen.setColor(Qt.gray)
-                pen.setWidth(self.p_ws[ind]*.99)
+                pen.setWidth(self.p_ws[ind]*.94)
                 pen.setColor(self.colors[self.color1_ind])
                 painter.setPen(pen)
                 painter.drawArc(self.midx-self.r_ws[ind], self.midy-self.r_hs[ind], self.r_ws[ind]*2, self.r_hs[ind]*2, start_angle*16,-360*16)
@@ -282,7 +286,7 @@ class Clock(QMainWindow):
                 self.color0_ind += 1
                 if self.color0_ind >= len(self.colors):
                     self.color0_ind = 0
-            if event.key() == Qt.Key_Left:
+            elif event.key() == Qt.Key_Left:
                 self.color0_ind += -1
                 if self.color0_ind < 0:
                     self.color0_ind = len(self.colors)-1
@@ -292,11 +296,26 @@ class Clock(QMainWindow):
                     self.color1_ind += 1
                     if self.color1_ind >= len(self.colors):
                         self.color1_ind = 0
-            if event.key() == Qt.Key_Down:
+            elif event.key() == Qt.Key_Down:
                 if self.gray_circles:
                     self.color1_ind += -1
                     if self.color1_ind < 0:
                         self.color1_ind = len(self.colors)-1
+
+            if event.key() == Qt.Key_Plus:
+                self.color2_ind += 1
+                if self.color2_ind >= len(self.colors):
+                    self.color2_ind = 0
+                p = self.palette()
+                p.setColor(self.backgroundRole(), self.colors[self.color2_ind])
+                self.setPalette(p)
+            if event.key() == Qt.Key_Minus:
+                self.color2_ind += -1
+                if self.color2_ind < 0:
+                    self.color2_ind = len(self.colors)-1
+                p = self.palette()
+                p.setColor(self.backgroundRole(), self.colors[self.color2_ind])
+                self.setPalette(p)
 
 
         if event.type() == QEvent.ContextMenu:
@@ -319,8 +338,8 @@ class Clock(QMainWindow):
                 self.resize(m,m)
             
             elif action == co:
-                self.color0_ind = 1
-                self.color1_ind = 2
+                self.color0_ind = self.colors.index(Qt.black)
+                self.color1_ind = self.colors.index(Qt.gray)
 
             elif action == ex:
                 self.custom_close()
