@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QKeyEvent, QPainter,QImage, QPen, QIcon, QPixmap, QColor, QBrush, QCursor, QFont, QPalette
 from PyQt5.QtCore import Qt, QPoint, QPointF, QSize, QEvent, QTimer, QCoreApplication
 
+from random import choice
 
 class Clock(QMainWindow):
 
@@ -60,7 +61,7 @@ class Clock(QMainWindow):
         self.h_def = self.h * 1
         self.pad = 10
 
-        self.reduce_ws = [.98,.94,.96,.97,.99,.99]
+        self.reduce_ws = [.98,.94,.95,.95,.97,.97]
         self.p_ws_def = [3,5,7,9,11,13]
         self.p_ws = [x for x in self.p_ws_def]
 
@@ -275,6 +276,10 @@ class Clock(QMainWindow):
         self.p_w = self.w / 30
         self.p_h = self.h / 30
 
+    def set_bg_color(self):
+        p = self.palette()
+        p.setColor(self.backgroundRole(), self.colors[self.color2_ind])
+        self.setPalette(p)
 
     def center(self):
         qr = self.frameGeometry()
@@ -330,16 +335,12 @@ class Clock(QMainWindow):
                 self.color2_ind += 1
                 if self.color2_ind >= len(self.colors):
                     self.color2_ind = 0
-                p = self.palette()
-                p.setColor(self.backgroundRole(), self.colors[self.color2_ind])
-                self.setPalette(p)
+                self.set_bg_color()
             if event.key() == Qt.Key_Minus:
                 self.color2_ind += -1
                 if self.color2_ind < 0:
                     self.color2_ind = len(self.colors)-1
-                p = self.palette()
-                p.setColor(self.backgroundRole(), self.colors[self.color2_ind])
-                self.setPalette(p)
+                self.set_bg_color()
 
             if event.key() == Qt.Key_A:
                 self.p_x += -1 * self.p_speed * self.w_scale
@@ -352,8 +353,14 @@ class Clock(QMainWindow):
             if event.key() == Qt.Key_Space:
                 self.p_speed += 1
             
-            if self.p_x != self.midx or self.p_y != self.midy:
-                self.p_draw = True
+            if event.key() == Qt.Key_R:
+                self.color0_ind = choice(range(len(self.colors)))
+                self.color1_ind = choice(range(len(self.colors)))
+                self.color2_ind = choice(range(len(self.colors)))
+                self.set_bg_color()
+            
+            # if self.p_x != self.midx or self.p_y != self.midy:
+                # self.p_draw = True
 
 
 
@@ -361,11 +368,15 @@ class Clock(QMainWindow):
 
         if event.type() == QEvent.ContextMenu:
             menu = QMenu()
-            ex = menu.addAction('Exit')
+           
             sq = menu.addAction('Square Window')
             tc = menu.addAction('Inner Circles')
             ttp = menu.addAction('Toggle Tooltip')
             co = menu.addAction('Default Colors')
+            rc = menu.addAction('Random Colors')
+            ci = menu.addAction('Circle')
+            ex = menu.addAction('Exit')
+            
             action = menu.exec_(event.globalPos())
 
             if action == tc:
@@ -381,6 +392,18 @@ class Clock(QMainWindow):
             elif action == co:
                 self.color0_ind = self.colors.index(Qt.black)
                 self.color1_ind = self.colors.index(Qt.gray)
+                self.color2_ind = self.colors.index(self.def_bg_color)
+                self.set_bg_color()
+            
+            elif action == ci:
+                self.p_draw = not self.p_draw
+
+            elif action == rc:
+                self.color0_ind = choice(range(len(self.colors)))
+                self.color1_ind = choice(range(len(self.colors)))
+                self.color2_ind = choice(range(len(self.colors)))
+                self.set_bg_color()
+                
 
             elif action == ex:
                 self.custom_close()
