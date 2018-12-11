@@ -36,7 +36,7 @@ class Clock(QMainWindow):
         self.was_tray = False
         self.colors = [Qt.white, Qt.black, Qt.gray, Qt.darkGray, Qt.lightGray, Qt.red, Qt.darkRed, Qt.green, Qt.darkGreen, Qt.blue, Qt.darkBlue, Qt.cyan, Qt.darkCyan, Qt.magenta, Qt.darkMagenta, Qt.yellow, Qt.darkYellow]
         self.color0_ind = self.colors.index(Qt.black)
-        self.color1_ind = self.colors.index(Qt.gray)
+        self.color1_ind = self.colors.index(Qt.white)
         self.dim = 0
         self.m_prior = "0"
         self.diy = 0
@@ -102,7 +102,8 @@ class Clock(QMainWindow):
 
         self.def_bg_color = self.widget.palette().color(QPalette.Background)
         self.colors.append(self.def_bg_color)
-        self.color2_ind = self.colors.index(self.def_bg_color)
+        self.color2_ind = self.colors.index(Qt.darkBlue)
+        self.set_bg_color()
 
 
 
