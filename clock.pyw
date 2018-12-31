@@ -112,29 +112,29 @@ class Clock(QMainWindow):
             return
 
         # cumulative seconds
-        self.cum_seconds = 0
+        self.cumulative_seconds = 0
         percents = []
         start_angle = -270
 
         # percent through a second
         percents.append(int(self.MS)/1000000)
-        self.cum_seconds += int(self.MS)/1000000
+        self.cumulative_seconds += int(self.MS)/1000000
     
         # percent through a minute
-        self.cum_seconds += int(self.S)
-        percents.append((self.cum_seconds)/60) # / number of seconds in a minute
+        self.cumulative_seconds += int(self.S)
+        percents.append((self.cumulative_seconds)/60) # / number of seconds in a minute
 
         # percent through an hour
-        self.cum_seconds += int(self.M)*60
-        percents.append((self.cum_seconds)/(self.sih)) # / number of seconds in an hour
+        self.cumulative_seconds += int(self.M)*60
+        percents.append((self.cumulative_seconds)/(self.sih)) # / number of seconds in an hour
 
         # percent through a day
-        self.cum_seconds += int(self.H)*60*60
-        percents.append((self.cum_seconds)/(self.sid)) # / number of seconds in a day
+        self.cumulative_seconds += int(self.H)*60*60
+        percents.append((self.cumulative_seconds)/(self.sid)) # / number of seconds in a day
 
         # percent through a month
-        self.cum_seconds += (int(self.d)-1)*60*60*24
-        percents.append((self.cum_seconds)/(self.sid*self.dim)) # / number of seconds in the current month
+        self.cumulative_seconds += (int(self.d)-1)*60*60*24
+        percents.append((self.cumulative_seconds)/(self.sid*self.dim)) # / number of seconds in the current month
 
         # percent through a year
         percents.append((float(self.ts) - self.ts_boy)/(self.ts_eoy - self.ts_boy)) # / number of seconds in this year
