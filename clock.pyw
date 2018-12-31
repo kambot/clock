@@ -133,7 +133,7 @@ class Clock(QMainWindow):
         percents.append((self.cum_seconds)/(self.sid)) # / number of seconds in a day
 
         # percent through a month
-        self.cum_seconds += int(self.d)*60*60*24
+        self.cum_seconds += (int(self.d)-1)*60*60*24
         percents.append((self.cum_seconds)/(self.sid*self.dim)) # / number of seconds in the current month
 
         # percent through a year
